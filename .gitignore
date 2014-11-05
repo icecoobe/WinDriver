@@ -1,3 +1,13 @@
+# log
+*.log
+
+# bak
+*.*~
+*.*.bak
+
+# target files
+objfre_wxp_x86
+
 # Object files
 *.o
 *.ko
