@@ -2,7 +2,7 @@
 #include "driver.h"
 
 // [Section INIT]
-// 标明卸载后可以从内存中移除
+// 驱动加载后可以从内存中移除
 // Entry point for the driver.
 #pragma code_seg("INIT")
 extern "C" 
