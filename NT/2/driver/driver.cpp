@@ -1,19 +1,8 @@
 
 #include "driver.h"
 
-#include <stdio.h>
-
-const ULONG kMemPoolTag = 'CCNT'; // 4 bytes, 驱动的内存标记, 便于后期的调试, 检测mem leaking
-const ULONG kMaxDevice = 10;
-
-const UNICODE_STRING kUstrDevNameFormat = RTL_CONSTANT_STRING(L"\\Device\\MyDDKDevice2-%2d");
-const UNICODE_STRING kUstrSymLinkNameFormat = RTL_CONSTANT_STRING(L"\\??\\HelloDDK2-%2d");
-
-//UNICODE_STRING gDevNameArray[10];
-//UNICODE_STRING gSymLinkNameArray[10];
-
 // [Section INIT]
-// 驱动加载后可以从内存中移除
+// 标明卸载后可以从内存中移除
 // Entry point for the driver.
 #pragma code_seg("INIT")
 extern "C" 
@@ -35,7 +24,7 @@ NTSTATUS DriverEntry(IN PDRIVER_OBJECT pDriverObject, IN PUNICODE_STRING pRegist
 	// UNICODE_STRING devName;
 	// RtlInitUnicodeString(&devName, L"\\Device\\MyDDKDevice2");
 	// 方法-2
-	UNICODE_STRING devName = RTL_CONSTANT_STRING(L"\\Device\\MyDDKDevice2-1");
+	UNICODE_STRING devName = RTL_CONSTANT_STRING(L"\\Device\\MyDDKDevice2");
 	PDEVICE_OBJECT pFdo = NULL;
 
 	//创建设备 FDO
@@ -51,27 +40,6 @@ NTSTATUS DriverEntry(IN PDRIVER_OBJECT pDriverObject, IN PUNICODE_STRING pRegist
 	{
 		return status;
 	}
-
-	UNICODE_STRING devName2 = RTL_CONSTANT_STRING(L"\\Device\\MyDDKDevice2-2");
-	PDEVICE_OBJECT pFdo2 = NULL;
-	//创建设备 FDO
-	status = IoCreateDevice(
-						pDriverObject,
-						sizeof(DEVICE_EXTENSION),
-						&(UNICODE_STRING)devName2,
-						FILE_DEVICE_UNKNOWN,
-						0, TRUE,
-						&pFdo2
-						);
-	if (!NT_SUCCESS(status))
-	{
-		return status;
-	}
-
-	KdPrint(("DriverObject->DeviceObj = %X, fdo1=%X, fdo2=%X\n", 
-		pDriverObject->DeviceObject, 
-		pFdo,
-		pFdo2));
 
 	// 3种方式
 	// Direct --- 直接读写设备
@@ -125,30 +93,3 @@ NTSTATUS IRPDispatchRoutine(IN PDEVICE_OBJECT pDevObj, IN PIRP pIrp)
 
 	return status;
 }
-
-// [Section PAGE]
-#pragma code_seg("PAGE")
-NTSTATUS CreateDevice(PDRIVER_OBJECT pDriverObject, unsigned int i)
-{
-	NTSTATUS status = STATUS_SUCCESS;
-	KdPrint(("Enter CreateDevice.\n"));
-
-	PDEVICE_OBJECT pFdo = NULL;
-	UNICODE_STRING devName;
-	UNICODE_STRING symName;
-
-	devName.Buffer = (PWSTR)ExAllocatePoolWithTag(
-								PagedPool, 
-								kUstrDevNameFormat.Length + sizeof(WCHAR), 
-								kMemPoolTag);
-	swprintf(devName.Buffer, kUstrDevNameFormat.Buffer, i);
-
-	symName.Buffer = (PWSTR)ExAllocatePoolWithTag(
-								PagedPool, 
-								kUstrSymLinkNameFormat.Length + sizeof(WCHAR), 
-								kMemPoolTag);
-	swprintf(symName.Buffer, kUstrSymLinkNameFormat.Buffer, i);
-
-	return status;
-}
-#pragma code_seg() // 复原到默认的.text

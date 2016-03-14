@@ -1,0 +1,11 @@
+TARGETNAME=DemoWDM1
+TARGETTYPE=DRIVER
+DRIVERTYPE=WDM
+TARGETPATH=OBJ
+
+
+INCLUDES=$(BASEDIR)\inc;\
+	
+SOURCES=Driver.cpp\
+	pnp.cpp\
+	dispatch.cpp\

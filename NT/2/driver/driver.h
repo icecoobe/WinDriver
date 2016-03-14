@@ -14,7 +14,6 @@ extern "C"
 // Device Extension
 typedef struct _DEVICE_EXTENSION {
 	PDEVICE_OBJECT DeviceObj;
-	UNICODE_STRING DeviceName;
 	UNICODE_STRING LinkName;
 } DEVICE_EXTENSION, *PDEVICE_EXTENSION;
 

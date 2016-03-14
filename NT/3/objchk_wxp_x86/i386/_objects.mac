@@ -1,0 +1,16 @@
+
+
+386_OBJECTS=\
+ $(OBJ_PATH)\$O\driver.obj \
+
+
+
+
+
+# lowercased
+BASEDIR=g:\winddk\7600.16385.1
+OBJECT_ROOT=g:\winddk\7600.16385.1
+MAKEDIR_LOWERCASE=g:\windri~1\nt\3
+OBJ_PATH=g:\windri~1\nt\3
+CONCURRENT_MIDL=0
+CONCURRENT_MANIFEST_BUILD=0

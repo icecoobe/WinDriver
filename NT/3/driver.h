@@ -27,4 +27,8 @@ IRPDispatchRoutine(
 	IN PIRP pIrp
 	);
 
+NTSTATUS 
+CreateDevice(PDRIVER_OBJECT pDriverObject, unsigned int uDevIndex);
+
+void PrintDriverInfo(PDRIVER_OBJECT pDriverObject);
 #endif // _DRIVER_H_

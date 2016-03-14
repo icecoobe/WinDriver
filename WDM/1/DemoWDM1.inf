@@ -1,0 +1,109 @@
+;--------- Version Section ---------------------------------------------------
+
+[Version]
+Signature="$CHICAGO$";
+Provider=%ProviderName%
+DriverVer=11/07/2014,1.0.0.0
+
+; If device fits one of the standard classes, use the name and GUID here,
+; otherwise create your own device class and GUID as this example shows.
+
+Class=SolarDevice
+ClassGUID={EF2962F0-0D55-4bff-B8AA-2221EE8A79B0}
+
+
+;--------- SourceDiskNames and SourceDiskFiles Section -----------------------
+
+; These sections identify source disks and files for installation. They are
+; shown here as an example, but commented out.
+
+[SourceDisksNames]
+; 1 = "DemoWDM1",Disk1,,
+1 = %InstallDisk%,"",1
+
+[SourceDisksFiles]
+DemoWDM1.sys = 1
+
+;--------- ClassInstall/ClassInstall32 Section -------------------------------
+
+; Not necessary if using a standard class
+
+; 9X Style
+[ClassInstall]
+Addreg=Class_AddReg
+
+; NT Style
+[ClassInstall32]
+Addreg=Class_AddReg
+
+[Class_AddReg]
+HKR,,,,%DeviceClassName%
+HKR,,Icon,,"-5"
+
+;--------- DestinationDirs Section -------------------------------------------
+
+[DestinationDirs]
+YouMark_Files_Driver = 10,System32\Drivers
+
+;--------- Manufacturer and Models Sections ----------------------------------
+
+[Manufacturer]
+%MfgName%=Mfg0
+
+[Mfg0]
+
+; PCI hardware Ids use the form
+; PCI\VEN_aaaa&DEV_bbbb&SUBSYS_cccccccc&REV_dd
+;改成你自己的ID
+%DeviceDesc%=SOLAR_DDI, PCI\VEN_1234&DEV_5678
+
+;---------- DDInstall Sections -----------------------------------------------
+; --------- Windows 9X -----------------
+
+; Experimentation has shown that DDInstall root names greater than 19 characters
+; cause problems in Windows 98
+
+[SOLAR_DDI]
+CopyFiles=YouMark_Files_Driver
+AddReg=Solar_9X_AddReg
+
+[Solar_9X_AddReg]
+HKR,,DevLoader,,*ntkern
+HKR,,NTMPDriver,,HelloWDM.sys
+HKR, "Parameters", "BreakOnEntry", 0x00010001, 0
+
+; --------- Windows NT -----------------
+
+[SOLAR_DDI.NT]
+CopyFiles=YouMark_Files_Driver
+AddReg=Solar_NT_AddReg
+
+[SOLAR_DDI.NT.Services]
+Addservice = HelloWDM, 0x00000002, Solar_AddService
+
+[Solar_AddService]
+DisplayName = %SvcDesc%
+ServiceType = 1 ; SERVICE_KERNEL_DRIVER
+StartType = 3 ; SERVICE_DEMAND_START
+ErrorControl = 1 ; SERVICE_ERROR_NORMAL
+ServiceBinary = %10%\System32\Drivers\HelloWDM.sys
+
+[Solar_NT_AddReg]
+HKLM, "System\CurrentControlSet\Services\DemoWDM1\Parameters",\
+"BreakOnEntry", 0x00010001, 0
+
+
+; --------- Files (common) -------------
+
+[YouMark_Files_Driver]
+DemoWDM1.sys
+
+;--------- Strings Section ---------------------------------------------------
+
+[Strings]
+ProviderName="chencai."
+MfgName="Solar Inc."
+DeviceDesc="Demo WDM1!"
+DeviceClassName="cc_Device"
+SvcDesc="ccDemoWDM1"
+InstallDisk= "Demo WDM1 Installation Disk"
